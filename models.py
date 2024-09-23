@@ -26,6 +26,8 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
+    is_verified = Column(Boolean, default=False)  # Поле для статусу верифікації
+    avatar_url = Column(String, nullable=True)  # Поле для зберігання URL аватара
 
     # Відношення до моделі Contact
     contacts = relationship("Contact", back_populates="user")

@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   postgres:
-    container_name: HW11_postgres  # Ім'я контейнера
+    container_name: HW13_postgres  # Ім'я контейнера
     image: postgres:16.1  # Образ PostgreSQL з версією 16.1
     environment:
       POSTGRES_USER: ${POSTGRES_USER}  # Логін користувача
@@ -10,12 +8,17 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}  # Назва бази даних
       PGDATA: /var/lib/postgresql/data/pgdata  # Шлях для даних
     ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"  # Мапінг портів
+      - "5432:5432"  # Мапінг портів
     volumes:
-      - pgdata:/var/lib/postgresql/data    # Volume для зберігання даних
+      - pgdata:/var/lib/postgresql/data  # Volume для зберігання даних
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   pgadmin:
-    container_name: HW11_pgadmin
+    container_name: HW13_pgadmin
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}  # Логін для pgAdmin
@@ -28,12 +31,13 @@ services:
       - pgadmin_data:/var/lib/pgadmin
 
   web:
-    container_name: HW11_web
+    container_name: HW13_web
     build: .
     ports:
       - "8000:8000"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy  # Чекати, поки postgres буде готовий
     environment:
       DATABASE_URL: ${DATABASE_URL}
 

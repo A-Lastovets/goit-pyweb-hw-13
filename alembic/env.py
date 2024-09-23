@@ -7,10 +7,7 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 from config import Base
 
-DATABASE_URL = (
-    f"postgresql://{os.getenv('POSTGRES_USER')}:{os.getenv('POSTGRES_PASSWORD')}"
-    f"@{os.getenv('POSTGRES_HOST')}:{os.getenv('POSTGRES_PORT')}/{os.getenv('POSTGRES_DB')}"
-)
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 config = context.config
 config.set_main_option("sqlalchemy.url", DATABASE_URL)

@@ -4,6 +4,7 @@ import models, schemas
 from models import User
 from schemas import UserCreate
 
+# Функції CRUD для контактів
 def create_contact(db: Session, contact: schemas.ContactCreate):
     db_contact = models.Contact(**contact.model_dump())
     db.add(db_contact)
@@ -33,6 +34,7 @@ def delete_contact(db: Session, contact_id: int):
         db.commit()
     return db_contact
 
+# Шифрування паролів
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def verify_password(plain_password, hashed_password):
@@ -41,6 +43,7 @@ def verify_password(plain_password, hashed_password):
 def get_password_hash(password):
     return pwd_context.hash(password)
 
+# Функції CRUD для користувачів
 def create_user(db: Session, user: UserCreate):
     db_user = db.query(User).filter(User.email == user.email).first()
     if db_user:
@@ -65,3 +68,28 @@ def get_user_by_email(db: Session, email: str):
 
 def get_contacts_by_user(db: Session, user_id: int, skip: int = 0, limit: int = 10):
     return db.query(models.Contact).filter(models.Contact.user_id == user_id).offset(skip).limit(limit).all()
+
+# Оновлення статусу верифікації користувача
+def verify_user_email(db: Session, email: str):
+    user = db.query(User).filter(User.email == email).first()
+    if user:
+        user.is_verified = True  # Додаємо поле is_verified у модель User
+        db.commit()
+        db.refresh(user)
+    return user
+
+# Перевірка, чи вже верифікований користувач
+def is_user_verified(db: Session, email: str):
+    user = db.query(User).filter(User.email == email).first()
+    if user and user.is_verified:
+        return True
+    return False
+
+# Оновлення URL аватара користувача
+def update_user_avatar(db: Session, user_id: int, avatar_url: str):
+    user = db.query(User).filter(User.id == user_id).first()
+    if user:
+        user.avatar_url = avatar_url
+        db.commit()
+        db.refresh(user)
+    return user
