@@ -13,6 +13,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 def get_db():
+    """
+    Створює сесію бази даних і закриває її після завершення запиту.
+
+    :yield: Сесія бази даних для виконання операцій CRUD.
+    """
     db = SessionLocal()
     try:
         yield db

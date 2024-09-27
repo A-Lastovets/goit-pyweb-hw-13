@@ -6,6 +6,15 @@ from fastapi import BackgroundTasks
 from jinja2 import Environment, FileSystemLoader
 
 def send_verification_email(email: str, username: str, token: str, background_tasks: BackgroundTasks):
+    """
+    Відправляє листа з підтвердженням електронної пошти у фоновому режимі.
+
+    :param email: Email одержувача.
+    :param username: Ім'я користувача, яке буде відображено в електронному листі.
+    :param token: Токен для підтвердження електронної пошти.
+    :param background_tasks: Фонові завдання FastAPI, у яких буде виконано відправку.
+    :raises ValueError: Якщо SENDER_EMAIL або SENDER_PASSWORD не налаштовані в середовищі.
+    """
     smtp_server = 'smtp.meta.ua'
     smtp_port = 587
     sender_email = os.getenv('SENDER_EMAIL')  # Електронна адреса відправника
@@ -33,6 +42,11 @@ def send_verification_email(email: str, username: str, token: str, background_ta
 
     # Відправка електронного листа
     def send_email_task():
+        """
+        Виконує реальну відправку електронного листа через SMTP сервер.
+
+        :raises Exception: У разі помилки відправки листа.
+        """
         try:
             with smtplib.SMTP(smtp_server, smtp_port) as server:
                 server.starttls()  # Для безпеки

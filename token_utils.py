@@ -10,7 +10,16 @@ ALGORITHM = "HS256"
 EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES = os.getenv("EMAIL_VERIFICATION_TOKEN_EXPIRE_MINUTES")  # Тривалість дії токена
 
 def create_email_verification_token(email: str, expires_delta: timedelta = None):
-    """Генерує токен для підтвердження електронної пошти."""
+    """
+    Генерує токен для підтвердження електронної пошти.
+
+    Аргументи:
+        email (str): Електронна адреса користувача.
+        expires_delta (timedelta, optional): Тривалість дії токену. Якщо не вказано, використовується стандартне значення.
+
+    Повертає:
+        str: Зашифрований JWT токен.
+    """
     to_encode = {"sub": email}
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -21,7 +30,18 @@ def create_email_verification_token(email: str, expires_delta: timedelta = None)
     return encoded_jwt
 
 def verify_email_token(token: str):
-    """Перевіряє токен для підтвердження електронної пошти."""
+    """
+    Перевіряє токен для підтвердження електронної пошти.
+
+    Аргументи:
+        token (str): JWT токен для перевірки.
+
+    Повертає:
+        str: Електронна адреса з токену, якщо токен валідний.
+
+    Викликає:
+        ValueError: Якщо токен недійсний або не містить електронної адреси.
+    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
